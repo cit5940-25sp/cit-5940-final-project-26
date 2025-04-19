@@ -51,6 +51,24 @@ public class OthelloGame {
                 board[i][j] = new BoardSpace(i, j, BoardSpace.SpaceType.EMPTY);
             }
         }
+
+        // Modifying provided starter code
+        board[3][3].setType(BoardSpace.SpaceType.WHITE);
+        board[3][4].setType(BoardSpace.SpaceType.BLACK);
+        board[4][3].setType(BoardSpace.SpaceType.BLACK);
+        board[4][4].setType(BoardSpace.SpaceType.WHITE);
+
+        if (playerOne.getColor() == BoardSpace.SpaceType.BLACK) {
+            playerOne.getPlayerOwnedSpacesSpaces().add(board[3][4]);
+            playerOne.getPlayerOwnedSpacesSpaces().add(board[4][3]);
+            playerTwo.getPlayerOwnedSpacesSpaces().add(board[3][3]);
+            playerTwo.getPlayerOwnedSpacesSpaces().add(board[4][4]);
+        } else {
+            playerOne.getPlayerOwnedSpacesSpaces().add(board[3][3]);
+            playerOne.getPlayerOwnedSpacesSpaces().add(board[4][4]);
+            playerTwo.getPlayerOwnedSpacesSpaces().add(board[3][4]);
+            playerTwo.getPlayerOwnedSpacesSpaces().add(board[4][3]);
+        }
     }
 
     /**
