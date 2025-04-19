@@ -98,7 +98,34 @@ public class OthelloGame {
      * @param availableMoves map of the available moves, that maps destination to list of origins
      * @param selectedDestination the specific destination that a HUMAN player selected
      */
-    public void takeSpaces(Player actingPlayer, Player opponent, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {}
+    public void takeSpaces(Player actingPlayer, Player opponent, Map<BoardSpace,
+            List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
+        // Obtain the list of origin positions given the selected destination
+        List<BoardSpace> theOrigins = availableMoves.get(selectedDestination);
+        if (theOrigins == null || theOrigins.isEmpty()) {
+            return;
+        }
+
+        for (BoardSpace eachOrigin : theOrigins) {
+            // First find the direction to the destination
+            int rowChange = Integer.compare(selectedDestination.getX(), eachOrigin.getX());
+            int columnChange = Integer.compare(selectedDestination.getY(), eachOrigin.getY());
+            // Then actually take the steps
+            int newRow = eachOrigin.getX();
+            int newColumn = eachOrigin.getY();
+            while (true) {
+                takeSpace(actingPlayer, opponent, newRow, newColumn);
+                // If already reached the destination, break
+                if (newRow == selectedDestination.getX() &&
+                        newColumn == selectedDestination.getY()) {
+                    break;
+                }
+                // Else, continue moving in that direction towards the destination
+                newRow += rowChange;
+                newColumn += columnChange;
+            }
+        }
+    }
 
     /**
      * PART 2
