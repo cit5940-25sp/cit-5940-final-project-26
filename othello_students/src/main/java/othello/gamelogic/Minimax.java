@@ -1,17 +1,10 @@
 package othello.gamelogic;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
-
-import com.sun.source.tree.Tree;
-import javafx.scene.paint.Color;
 import othello.Constants;
 
 public class Minimax {
-
-    private Node root;
 
     public static void main(String[] args) {
         Minimax test = new Minimax();
