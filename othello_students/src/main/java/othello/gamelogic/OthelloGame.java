@@ -154,13 +154,10 @@ public class OthelloGame {
      * @return the BoardSpace that was decided upon
      */
     public BoardSpace computerDecision(ComputerPlayer computer) {
-        Minimax minimax = new Minimax();
-        Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
         if (playerOne.getColor() == computer.getColor()) {
+            Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
             System.out.println("Computer is Player one: " + computer.getColor());
-            Node root = new Node();
-            minimax.buildTree(board,playerOne,playerTwo,0, root, 5);
-            BoardSpace next = minimax.minimaxStrategyWithMaxDepth(root);
+            BoardSpace next = computer.selectedStrategy(board, playerOne, playerTwo, 2);
             System.out.println("Next value is : " + next.getX() + " " + next.getY());
             int x_axis = next.getX();
             int y_axis = next.getY();
@@ -170,10 +167,9 @@ public class OthelloGame {
                 }
             }
         } else {
-            System.out.println("Computer is Player two: " + computer.getColor());
-            Node root = new Node();
-            minimax.buildTree(board,playerTwo,playerOne,0, root, 5);
-            BoardSpace next = minimax.minimaxStrategyWithMaxDepth(root);
+            Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
+            System.out.println("Computer is Player Two: " + computer.getColor());
+            BoardSpace next = computer.selectedStrategy(board, playerTwo, playerOne, 2);
             System.out.println("Next value is : " + next.getX() + " " + next.getY());
             int x_axis = next.getX();
             int y_axis = next.getY();
@@ -184,7 +180,6 @@ public class OthelloGame {
             }
         }
         System.out.println("Null arrived!");
-        System.out.println(move);
         return null;
     }
 
