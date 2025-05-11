@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static othello.gamelogic.BoardSpace.SpaceType.EMPTY;
 
 /**
  * Unit tests for OthelloGame
@@ -65,5 +66,17 @@ public class OthelloGameTest {
         assertEquals(3, next.size());
         assertTrue(next.keySet().containsAll(expected));
     }
+
+    @Test
+    public void frontFlipAt23() {
+        // Arrange: build custom column and compute moves
+        // clear center four
+        for (int x=3; x<=4; x++)
+            for (int y=3; y<=4; y++)
+                board[x][y].setType(EMPTY);
+
+
+    }
+
 
 }
