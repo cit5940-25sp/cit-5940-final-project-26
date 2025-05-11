@@ -18,14 +18,16 @@ public class OthelloGameTest {
     private OthelloGame game;
     private BoardSpace[][] board;
 
-    /** identical test fixture for each test – reproducible and small */
+    /**
+     * identical test fixture for each test – reproducible and small
+     */
     @Before
     public void setUp() {
         black = new HumanPlayer();
         white = new HumanPlayer();
         black.setColor(BoardSpace.SpaceType.BLACK);
         white.setColor(BoardSpace.SpaceType.WHITE);
-        game  = new OthelloGame(black, white);
+        game = new OthelloGame(black, white);
         board = game.getBoard();
     }
 
@@ -46,7 +48,7 @@ public class OthelloGameTest {
         // Pick the opening move at (2,3), which should flip (3,3)
         BoardSpace dest = board[2][3];
 
-        Map<BoardSpace,List<BoardSpace>> moves =
+        Map<BoardSpace, List<BoardSpace>> moves =
                 game.getAvailableMoves(black);
         assertTrue(moves.containsKey(dest));
 
@@ -58,19 +60,10 @@ public class OthelloGameTest {
         }
         assertSame(BoardSpace.SpaceType.WHITE, board[4][4].getType());
 
-        Map<BoardSpace,List<BoardSpace>> next = game.getAvailableMoves(white);
+        Map<BoardSpace, List<BoardSpace>> next = game.getAvailableMoves(white);
         Set<BoardSpace> expected = Set.of(board[2][2], board[2][4], board[4][2]);
         assertEquals(3, next.size());
         assertTrue(next.keySet().containsAll(expected));
     }
 
-    @Test
-    public void frontFlipAt23() {
-        // Arrange: build custom column and compute moves
-        // clear center four
-        for (int x=3; x<=4; x++)
-            for (int y=3; y<=4; y++)
-                board[x][y].setType(EMPTY);
-
-
-    }
+}
