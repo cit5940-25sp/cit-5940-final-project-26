@@ -18,28 +18,50 @@ public class Minimax {
             }
         }
         board[3][3].setType(BoardSpace.SpaceType.WHITE);
+        board[4][4].setType(BoardSpace.SpaceType.WHITE);
         board[3][4].setType(BoardSpace.SpaceType.BLACK);
         board[4][3].setType(BoardSpace.SpaceType.BLACK);
-        board[4][4].setType(BoardSpace.SpaceType.WHITE);
         //System.out.println(test.toString(board));
         Node root = new Node();
         Player one = new HumanPlayer();
-        Player two = new ComputerPlayer("");
+        Player two = new HumanPlayer();
         one.setColor(BoardSpace.SpaceType.BLACK);
         two.setColor(BoardSpace.SpaceType.WHITE);
-        test.buildTree(board, two, one, 0, root, 3);
-        //System.out.println(root.getChildren());
+        test.buildTree(board, one, two, 0, root, 2);
+        System.out.println(test.toString(board));
+        BoardSpace best  = test.minimaxStrategyWithMaxDepth(root);
+        System.out.println(best.getX() + " " + best.getY());
+        /*
+        for (BoardSpace i : one.getAvailableMoves(board).keySet()) {
+            BoardSpace[][] future = test.futureBoard(board, i,one.getAvailableMoves(board), one);
+            for (BoardSpace j : two.getAvailableMoves(future).keySet()) {
+                BoardSpace[][] another = test.futureBoard(future,j,two.getAvailableMoves(future),two);
+            }
+        }
         for (Node i : root.getChildren()) {
             System.out.println("The i is : " + i.getBoardspace().getX() + " " + i.getBoardspace().getY());
-            System.out.println(i.isMax());
             for (Node j : i.getChildren()) {
                 System.out.println("The next move i + 1: " + j.getBoardspace().getX() + " " + j.getBoardspace().getY());
             }
         }
+         */
     }
 
     public Minimax() {}
 
+    public BoardSpace minimaxOneStep(BoardSpace[][] board, Player pc) {
+        Map<BoardSpace, List<BoardSpace>> move = pc.getAvailableMoves(board);
+        BoardSpace max_boardspace = null;
+        int max_value = Integer.MIN_VALUE;
+        for (BoardSpace i : move.keySet()) {
+            BoardSpace[][] futrue = futureBoard(board, i,move, pc);
+            if (computeWeight(futrue,pc) >= max_value) {
+                max_boardspace = new BoardSpace(i);
+                max_value = computeWeight(futrue,pc);
+            }
+        }
+        return max_boardspace;
+    }
     //This method is the next step after buildTree()
     //Return the next optimal BoardSpace to move based on minimax algo
     public BoardSpace minimaxStrategyWithMaxDepth(Node node) {
@@ -103,6 +125,9 @@ public class Minimax {
     public void buildTree(BoardSpace[][] board, Player pc, Player op, int depth, Node root, int maxDepth) {
         if (maxDepth < 2) {
             throw new IllegalArgumentException("Error: Max Depth should be at least 2");
+        }
+        if (depth > maxDepth) {
+            return;
         }
         BoardSpace[][] copyBoard = this.getCopyBoard(board);
         if (depth == 0) {
