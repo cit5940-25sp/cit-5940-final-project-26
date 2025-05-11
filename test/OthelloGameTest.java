@@ -1,4 +1,4 @@
-package othello.gamelogic;
+import othello.gamelogic.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +65,12 @@ public class OthelloGameTest {
     }
 
     @Test
+    public void frontFlipAt23() {
+        // Arrange: build custom column and compute moves
+        // clear center four
+        for (int x=3; x<=4; x++)
+            for (int y=3; y<=4; y++)
+                board[x][y].setType(EMPTY);
 
 
-}
+    }
