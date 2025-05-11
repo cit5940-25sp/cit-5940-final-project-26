@@ -1,5 +1,6 @@
 package othello.gamelogic;
 
+
 /**
  * Represents a computer player that will make decisions autonomously during their turns.
  * Employs a specific computer strategy passed in through program arguments.
@@ -12,7 +13,9 @@ public class ComputerPlayer extends Player{
         // TODO: Use the strategyName input to create a specific strategy class for this computer
         // This input should match the ones specified in App.java!
 
-        theComputerStrategy = null; // Placeholder code for now
+        if ("custom".equalsIgnoreCase(strategyName)) {
+            theComputerStrategy = new TDLearningStrategy(0.99, 0.01);
+        }
     }
 
     // PART 2
@@ -31,5 +34,17 @@ public class ComputerPlayer extends Player{
 
         // Delegation
         return theComputerStrategy.computerMove(board, this);
+    }
+
+    public BoardSpace computerMove(BoardSpace[][] board, Player actingPlayer) {
+        if (theComputerStrategy == null) {
+            return null;
+        }
+
+        return theComputerStrategy.computerMove(board, actingPlayer);
+    }
+
+    public AIStrategy getComputerStrategy() {
+        return theComputerStrategy;
     }
 }
