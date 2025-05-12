@@ -215,29 +215,60 @@ public class GameController  {
         Map<BoardSpace, List<BoardSpace>> availableMoves = og.getAvailableMoves(player);
         if (availableMoves == null) {
             turnLabel.setText("Null move found for \n" + player.getColor() + "! \n Please implement \ncomputerDecision()!");
+            return;
         } else if (availableMoves.size() == 0) {
-            if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() != 64 && skippedTurns != 2) {
-                skipTurnText(player);
-                takeTurn(otherPlayer(player));
-                skippedTurns++;
-            } else if (skippedTurns == 2 || og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() == 64){
+            int totalPositions = og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() +
+                    og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size();
+            if (totalPositions == 64) {
                 gameOver();
+                return;
             }
 
+            if (skippedTurns == 2) {
+                gameOver();
+                return;
+            } else {
+                skipTurnText(player);
+                skippedTurns++;
+                takeTurn(otherPlayer(player));
+            }
+            return;
         } else {
             skippedTurns = 0;
             BoardSpace selectedDestination = og.computerDecision(player);
-            // From all origins, path to the destination and take spaces
-            og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
-            updateGUIBoard(player, availableMoves, selectedDestination);
 
-            // Redisplay the new board
-            clearBoard();
-            displayBoard();
+            if (selectedDestination != null) {
+                // From all origins, path to the destination and take spaces
+                og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
+                updateGUIBoard(player, availableMoves, selectedDestination);
 
-            // Next opponent turn
-            turnText(otherPlayer(player));
-            takeTurn(otherPlayer(player));
+                int totalPositions = og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() +
+                        og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size();
+                if (totalPositions == 64) {
+                    gameOver();
+                    return;
+                }
+
+                // Redisplay the new board
+                clearBoard();
+                displayBoard();
+
+                // Next opponent turn
+                turnText(otherPlayer(player));
+                takeTurn(otherPlayer(player));
+            }
+
+//            // From all origins, path to the destination and take spaces
+//            og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
+//            updateGUIBoard(player, availableMoves, selectedDestination);
+
+//            // Redisplay the new board
+//            clearBoard();
+//            displayBoard();
+//
+//            // Next opponent turn
+//            turnText(otherPlayer(player));
+//            takeTurn(otherPlayer(player));
         }
 
     }
