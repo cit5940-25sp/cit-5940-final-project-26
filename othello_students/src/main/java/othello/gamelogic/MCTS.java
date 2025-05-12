@@ -215,7 +215,7 @@ public class MCTS {
     }
 
     public void backpropagation(MCTSNode node, boolean win) {
-        if (node.getParent() == null) {
+        if (node == null) {
             return;
         }
         if (win) {
