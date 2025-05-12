@@ -16,7 +16,7 @@ public class ComputerPlayer extends Player{
         this.strategy = strategyName.toLowerCase();
 
         if (this.strategy.equals("custom")) {
-            theComputerStrategy = new TDLearningStrategy(0.99, 0.01);
+            theComputerStrategy = new TDLearningStrategy(0.90, 0.005);
         } else if (this.strategy.equals("minimax")) {
             theComputerStrategy = null;
         } else if (this.strategy.equals("mcts")) {
