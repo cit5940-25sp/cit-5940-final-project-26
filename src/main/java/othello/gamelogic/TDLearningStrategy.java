@@ -3,6 +3,8 @@ package othello.gamelogic;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
+
+import org.deeplearning4j.nn.conf.ConvolutionMode;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -42,42 +44,102 @@ public class TDLearningStrategy implements AIStrategy {
         this.CNN = model;
     }
 
+//    private MultiLayerNetwork theCNNModel() {
+//        int length = 8;
+//        int width = 8;
+//        int encoding = 1;
+//
+//        MultiLayerConfiguration configuration = new NeuralNetConfiguration.Builder()
+//                .seed(27).weightInit(WeightInit.XAVIER)
+//                .updater(new Adam(alpha)).list()
+//                .layer(0, new ConvolutionLayer.Builder(3, 3)
+//                        .nIn(encoding)
+//                        .stride(1, 1)
+//                        .nOut(16)
+//                        .activation(Activation.RELU)
+//                        .build())
+//                .layer(1, new SubsamplingLayer.Builder()
+//                        .kernelSize(2, 2)
+//                        .stride(2, 2)
+//                        .build())
+//                .layer(2, new ConvolutionLayer.Builder(3, 3)
+//                        .nOut(32)
+//                        .stride(1, 1)
+//                        .activation(Activation.RELU)
+//                        .build())
+//                .layer(3, new DenseLayer.Builder()
+//                        .nOut(64)
+//                        .activation(Activation.RELU)
+//                        .build())
+//                .layer(4, new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
+//                        .activation(Activation.IDENTITY)
+//                        .nOut(1)
+//                        .build())
+//                .setInputType(InputType.convolutional(length, width, encoding)).build();
+//
+//        MultiLayerNetwork network = new MultiLayerNetwork(configuration);
+//        network.init();
+//
+//        return network;
+//    }
+
     private MultiLayerNetwork theCNNModel() {
         int length = 8;
         int width = 8;
-        int encoding = 1;
+        int channels = 1;
 
         MultiLayerConfiguration configuration = new NeuralNetConfiguration.Builder()
-                .seed(27).weightInit(WeightInit.XAVIER)
-                .updater(new Adam(alpha)).list()
+                .seed(27)
+                .weightInit(WeightInit.XAVIER)
+                .updater(new Adam(alpha))
+                .convolutionMode(ConvolutionMode.Same)
+                .list()
                 .layer(0, new ConvolutionLayer.Builder(3, 3)
-                        .nIn(encoding)
+                        .nIn(channels)
                         .stride(1, 1)
-                        .nOut(16)
-                        .activation(Activation.RELU)
-                        .build())
-                .layer(1, new SubsamplingLayer.Builder()
-                        .kernelSize(2, 2)
-                        .stride(2, 2)
-                        .build())
-                .layer(2, new ConvolutionLayer.Builder(3, 3)
-                        .nOut(32)
-                        .stride(1, 1)
-                        .activation(Activation.RELU)
-                        .build())
-                .layer(3, new DenseLayer.Builder()
                         .nOut(64)
                         .activation(Activation.RELU)
                         .build())
-                .layer(4, new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
+                .layer(1, new ConvolutionLayer.Builder(3, 3)
+                        .stride(1, 1)
+                        .nOut(64)
+                        .activation(Activation.RELU)
+                        .build())
+                .layer(2, new SubsamplingLayer.Builder()
+                        .kernelSize(2, 2)
+                        .stride(2, 2)
+                        .build())
+                .layer(3, new ConvolutionLayer.Builder(3, 3)
+                        .stride(1, 1)
+                        .nOut(128)
+                        .activation(Activation.RELU)
+                        .build())
+                .layer(4, new ConvolutionLayer.Builder(3, 3)
+                        .stride(1, 1)
+                        .nOut(128)
+                        .activation(Activation.RELU)
+                        .build())
+                .layer(5, new SubsamplingLayer.Builder()
+                        .kernelSize(2, 2)
+                        .stride(2, 2)
+                        .build())
+                .layer(6, new DenseLayer.Builder()
+                        .nOut(256)
+                        .activation(Activation.RELU)
+                        .build())
+                .layer(7, new DenseLayer.Builder()
+                        .nOut(128)
+                        .activation(Activation.RELU)
+                        .build())
+                .layer(8, new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
                         .activation(Activation.IDENTITY)
                         .nOut(1)
                         .build())
-                .setInputType(InputType.convolutional(length, width, encoding)).build();
+                .setInputType(InputType.convolutional(length, width, channels))
+                .build();
 
         MultiLayerNetwork network = new MultiLayerNetwork(configuration);
         network.init();
-
         return network;
     }
 
