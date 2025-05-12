@@ -35,18 +35,14 @@ public class ComputerPlayer extends Player{
      * @return BoardSpace by AI
      */
     public BoardSpace computerMove(BoardSpace[][] board) {
-        // If the actual AI strategy is not instantiated, return null
         if (theComputerStrategy == null) {
             return null;
         }
 
-        // Delegation
         return theComputerStrategy.computerMove(board, this);
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // The two argument version -- convenient for the ML custom strategy
     public BoardSpace computerMove(BoardSpace[][] board, Player actingPlayer) {
         if (theComputerStrategy == null) {
@@ -59,33 +55,9 @@ public class ComputerPlayer extends Player{
 
         return null;
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // The three argument version -- convenient for the Minimax and MCTS strategies
-//    public BoardSpace computerMove(BoardSpace[][] board, Player self, Player opponent) {
-//        if (this.strategy.equals("custom")) {
-//            if (theComputerStrategy != null) {
-//                return theComputerStrategy.computerMove(board, self);
-//            }
-//            return null;
-//        } else if (this.strategy.equals("minimax")) {
-//            Minimax minimax = new Minimax();
-//            Node root = new Node();
-//            minimax.buildTree(board, self, opponent, 0, root, 3);
-//            BoardSpace next = minimax.minimaxStrategyWithMaxDepth(root);
-//            return next;
-//        } else if (this.strategy.equals("mcts")) {
-//            return null ; // Placeholder ruturn null for now, add logic when MCTS is implemented
-//        }
-//
-//        return null;
-//    }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Changed March selectedStrategy to computerMove -- only a name change
+    // Changed March's selectedStrategy to computerMove -- only a name change
     // The four-argument version -- convenient for minimax
     public BoardSpace computerMove(BoardSpace[][] board, Player self, Player op, int maxDepth) {
         if (this.strategy.equals("minimax")) {
@@ -103,29 +75,19 @@ public class ComputerPlayer extends Player{
         }
         return null;
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public BoardSpace selectedStrategy(BoardSpace[][] board, Player self, Player op, int maxDepth, int epoch) {
-        if (this.strategy.equals("minimax") && maxDepth == -1) {
-            Minimax minimax = new Minimax();
-            BoardSpace next = minimax.minimaxOneStep(board, self);
-            return next;
-        }
-        if (this.strategy.equals("minimax")) {
-            Minimax minimax = new Minimax();
-            Node root = new Node();
-            minimax.buildTree(board, self, op,0, root, maxDepth);
-            BoardSpace next = minimax.minimaxStrategyWithMaxDepth(root);
-            return next;
-        } else if (this.strategy.equals("mcts")) {
+
+    // Changed March's selectedStrategy to computerMove -- only a name change
+    // The five-argument version -- convenient for MCTS
+    public BoardSpace computerMove(BoardSpace[][] board, Player self, Player op, int maxDepth, int epoch) {
+        if (this.strategy.equals("mcts")) {
             MCTS mcts = new MCTS(epoch, self, op, board);
             BoardSpace next = mcts.MCTS_Strategy();
             return next;
         }
         return null;
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     public AIStrategy getComputerStrategy() {
         return theComputerStrategy;
