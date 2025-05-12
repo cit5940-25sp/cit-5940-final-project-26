@@ -31,20 +31,6 @@ public class Minimax {
         System.out.println(test.toString(board));
         BoardSpace best  = test.minimaxStrategyWithMaxDepth(root);
         System.out.println(best.getX() + " " + best.getY());
-        /*
-        for (BoardSpace i : one.getAvailableMoves(board).keySet()) {
-            BoardSpace[][] future = test.futureBoard(board, i,one.getAvailableMoves(board), one);
-            for (BoardSpace j : two.getAvailableMoves(future).keySet()) {
-                BoardSpace[][] another = test.futureBoard(future,j,two.getAvailableMoves(future),two);
-            }
-        }
-        for (Node i : root.getChildren()) {
-            System.out.println("The i is : " + i.getBoardspace().getX() + " " + i.getBoardspace().getY());
-            for (Node j : i.getChildren()) {
-                System.out.println("The next move i + 1: " + j.getBoardspace().getX() + " " + j.getBoardspace().getY());
-            }
-        }
-         */
     }
 
     public Minimax() {}
@@ -65,55 +51,66 @@ public class Minimax {
     //This method is the next step after buildTree()
     //Return the next optimal BoardSpace to move based on minimax algo
     public BoardSpace minimaxStrategyWithMaxDepth(Node node) {
-        Node next_node = value(node);
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
+        Node next_node = value(node, alpha, beta);
+        System.out.println(next_node.getWeight());
         BoardSpace next_move = next_node.getBoardspace();
         return next_move;
     }
 
     //If isMin, then we need to find the min value of all its children
     //If isMax, then we need to find the max value of all its children
-    public Node value(Node node) {
+    public Node value(Node node, int alpha, int beta) {
         if (node.getChildren().isEmpty()) {
             return node;
         }
         if (node.isMax()) {
-            return max_node(node);
+            return max_node(node, alpha, beta);
         } else if (node.isMin()){
-            return min_node(node);
+            return min_node(node, alpha, beta);
         }
         return node;
     }
 
     //In order to get the max node in the branch
-    public Node max_node(Node node) {
+    public Node max_node(Node node, int alpha, int beta) {
         int max = Integer.MIN_VALUE;
         Node max_node = null;
         if (node.getChildren().isEmpty()) {
             return node;
         }
         for (Node successor : node.getChildren()) {
-            if (value(successor).getWeight() >= max) {
-                max = value(successor).getWeight();
+            if (value(successor, alpha, alpha).getWeight() >= max) {
+                max = value(successor, alpha, beta).getWeight();
                 max_node = successor;
                 max_node.setWeight(max);
             }
+            if (max > beta) {
+                return max_node;
+            }
+            alpha = Math.max(alpha, max);
         }
         return max_node;
     }
 
     //In order to get the min node in the branch
-    public Node min_node(Node node) {
+    public Node min_node(Node node, int alpha, int beta) {
         int min = Integer.MAX_VALUE;
         Node min_node = null;
         if (node.getChildren().isEmpty()) {
             return node;
         }
         for (Node successor : node.getChildren()) {
-            if (value(successor).getWeight() <= min) {
-                min = value(successor).getWeight();
+            if (value(successor, alpha, beta).getWeight() <= min) {
+                min = value(successor, alpha, beta).getWeight();
                 min_node = successor;
                 min_node.setWeight(min);
             }
+            if (min < alpha) {
+                return min_node;
+            }
+            beta = Math.min(beta, min);
         }
         return min_node;
     }
@@ -171,6 +168,7 @@ public class Minimax {
             }
         }
     }
+
 
     //This method is for creating a copy of current state of board
     //In order to prevent any modification for original board
