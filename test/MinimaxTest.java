@@ -32,11 +32,9 @@ public class MinimaxTest {
         white.setColor(BoardSpace.SpaceType.WHITE);
     }
 
-
-
+    // computeWeight: adding a black piece increases score by its weight
     @Test
     public void weightEvalTest() {
-        // score increases by cell weight when black adds piece
         int base = mm.computeWeight(board, black);
         board[2][3].setType(BoardSpace.SpaceType.BLACK);
         int after = mm.computeWeight(board, black);
@@ -44,9 +42,9 @@ public class MinimaxTest {
         assertEquals(Constants.BOARD_WEIGHTS[2][3], after - base);
     }
 
+    // buildTree+minimax: on B-W-W-W vertical, pick the far-right flip at (5,3)
     @Test
     public void twoLayerChoiceTest() {
-        // B-W-W-W vertical: choose rightmost
         board[1][3].setType(BoardSpace.SpaceType.BLACK);
         board[2][3].setType(BoardSpace.SpaceType.WHITE);
         board[3][3].setType(BoardSpace.SpaceType.WHITE);
@@ -58,9 +56,9 @@ public class MinimaxTest {
         assertEquals(3, best.getY());
     }
 
+    // buildTree: empty board generates leaf node with weight 0
     @Test
     public void emptyBoardLeafTest() {
-        // empty board yields leaf with zero weight
         BoardSpace[][] empty = new BoardSpace[8][8];
         for (int x = 0; x < 8; x++)
             for (int y = 0; y < 8; y++)
@@ -71,9 +69,9 @@ public class MinimaxTest {
         assertEquals(0, root.getWeight());
     }
 
+    // buildTree: no moves available ⇒ node is leaf with weight 0
     @Test
     public void noMoveTest() {
-        // when no legal moves, node is leaf
         BoardSpace[][] empty = new BoardSpace[8][8];
         for (int x = 0; x < 8; x++)
             for (int y = 0; y < 8; y++)
@@ -84,9 +82,9 @@ public class MinimaxTest {
         assertEquals(0, root.getWeight());
     }
 
+    // computeWeight: empty board evaluates to 0
     @Test
     public void emptyWeightTest() {
-        // computeWeight on empty board
         BoardSpace[][] empty = new BoardSpace[8][8];
         for (int x = 0; x < 8; x++)
             for (int y = 0; y < 8; y++)
@@ -95,15 +93,9 @@ public class MinimaxTest {
         assertEquals(0, w);
     }
 
-    @Test
-    public void mainCoverageTest() {
-        // invoke main() for coverage
-        Minimax.main(new String[0]);
-    }
-
+    // buildTree: at maxDepth, direct children are leaves with non-zero weight
     @Test
     public void depthLeafTest() {
-        // at maxDepth direct children are leaves
         Node root = new Node();
         mm.buildTree(board, black, white, 0, root, 2);
         for (Node leaf : root.getChildren()) {
@@ -112,9 +104,9 @@ public class MinimaxTest {
         }
     }
 
+    // minimaxOneStep: when opponent has no reply, return the only move
     @Test
     public void opponentNoMoveTest() {
-        // opponent has no reply move
         BoardSpace[][] custom = new BoardSpace[8][8];
         for (int x = 0; x < 8; x++)
             for (int y = 0; y < 8; y++)
@@ -127,18 +119,17 @@ public class MinimaxTest {
         assertEquals(2, best.getY());
     }
 
-
+    // getCopyBoard & toString: copy is independent and prints identically
     @Test
     public void copyPrintTest() {
-        // getCopyBoard and toString consistency
         BoardSpace[][] copy = mm.getCopyBoard(board);
         assertNotSame(board, copy);
         assertEquals(mm.toString(board), mm.toString(copy));
     }
 
+    // futureBoard: vertical flip path at (2,3) flips (3,3),(4,3)
     @Test
     public void verticalFlipTest() {
-        // verify vertical flip logic
         Map<BoardSpace, List<BoardSpace>> moves = black.getAvailableMoves(board);
         BoardSpace dst = board[2][3];
         BoardSpace[][] next = mm.futureBoard(board, dst, moves, black);
@@ -147,25 +138,35 @@ public class MinimaxTest {
         }
     }
 
+    // minimaxOneStep: no legal moves ⇒ return null
     @Test
     public void oneStepNoMoveTest() {
         BoardSpace[][] empty = new BoardSpace[8][8];
-        for (int x=0;x<8;x++) for (int y=0;y<8;y++)
-            empty[x][y] = new BoardSpace(x,y,BoardSpace.SpaceType.EMPTY);
+        for (int x = 0; x < 8; x++)
+            for (int y = 0; y < 8; y++)
+                empty[x][y] = new BoardSpace(x, y, BoardSpace.SpaceType.EMPTY);
         assertNull(mm.minimaxOneStep(empty, black));
     }
 
+    // getCopyBoard: mutating the copy does not affect the original
     @Test
     public void copyIsolationTest() {
         BoardSpace[][] c = mm.getCopyBoard(board);
-        c[3][3].setType(BoardSpace.SpaceType.EMPTY); // mutate copy
-        assertNotEquals(mm.toString(board), mm.toString(c)); // originals differ
+        c[3][3].setType(BoardSpace.SpaceType.EMPTY);
+        assertNotEquals(mm.toString(board), mm.toString(c));
     }
 
+    // futureBoard: passing a non-legal move yields null
     @Test
     public void futureBoardNullOriginTest() {
-        Map<BoardSpace,List<BoardSpace>> moves = black.getAvailableMoves(board);
-        BoardSpace fake = new BoardSpace(0,0,BoardSpace.SpaceType.EMPTY); // not a legal move
+        Map<BoardSpace, List<BoardSpace>> moves = black.getAvailableMoves(board);
+        BoardSpace fake = new BoardSpace(0, 0, BoardSpace.SpaceType.EMPTY);
         assertNull(mm.futureBoard(board, fake, moves, black));
+    }
+
+    // main(): ensure demo main runs without error
+    @Test
+    public void mainCoverageTest() {
+        Minimax.main(new String[0]);
     }
 }
