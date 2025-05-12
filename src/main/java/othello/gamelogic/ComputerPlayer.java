@@ -105,6 +105,28 @@ public class ComputerPlayer extends Player{
     }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public BoardSpace selectedStrategy(BoardSpace[][] board, Player self, Player op, int maxDepth, int epoch) {
+        if (this.strategy.equals("minimax") && maxDepth == -1) {
+            Minimax minimax = new Minimax();
+            BoardSpace next = minimax.minimaxOneStep(board, self);
+            return next;
+        }
+        if (this.strategy.equals("minimax")) {
+            Minimax minimax = new Minimax();
+            Node root = new Node();
+            minimax.buildTree(board, self, op,0, root, maxDepth);
+            BoardSpace next = minimax.minimaxStrategyWithMaxDepth(root);
+            return next;
+        } else if (this.strategy.equals("mcts")) {
+            MCTS mcts = new MCTS(epoch, self, op, board);
+            BoardSpace next = mcts.MCTS_Strategy();
+            return next;
+        }
+        return null;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public AIStrategy getComputerStrategy() {
         return theComputerStrategy;
     }
