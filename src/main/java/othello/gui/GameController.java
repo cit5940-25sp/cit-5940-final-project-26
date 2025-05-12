@@ -129,8 +129,10 @@ public class GameController  {
         turnCircle.setFill(player.getColor().fill());
         turnLabel.setText(
                 player.getColor() + "'s Turn\n" + humanOrCom + "Score: \n" +
-                        og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                        og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                        og.getPlayerOne().getColor() + ": " + og.getPlayerOne().
+                        getPlayerOwnedSpacesSpaces().size() + " - " +
+                        og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().
+                        getPlayerOwnedSpacesSpaces().size());
     }
 
     /**
@@ -139,9 +141,12 @@ public class GameController  {
     @FXML
     protected void skipTurnText(Player player) {
         turnLabel.setText(
-                "Skipped " + player.getColor() + " due to no moves available! " + otherPlayer(player).getColor() + "'s Turn\n" +
-                        og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                        og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                "Skipped " + player.getColor() + " due to no moves available! " +
+                        otherPlayer(player).getColor() + "'s Turn\n" +
+                        og.getPlayerOne().getColor() + ": " +
+                        og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
+                        og.getPlayerTwo().getColor() + ": " +
+                        og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
     }
 
     /**
@@ -171,16 +176,19 @@ public class GameController  {
     protected void showMoves(HumanPlayer player) {
         Map<BoardSpace, List<BoardSpace>> availableMoves = og.getAvailableMoves(player);
         if (availableMoves == null) {
-            turnLabel.setText("Null move found for \n" + player.getColor() + "! \n Please implement \ngetAvailableMoves()!");
+            turnLabel.setText("Null move found for \n" +
+                    player.getColor() + "! \n Please implement \ngetAvailableMoves()!");
         } else if (availableMoves.size() == 0) {
-            if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() != 64 && skippedTurns != 2) {
+            if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() +
+                    og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() != 64 && skippedTurns != 2) {
                 skipTurnText(player);
 
                 skippedTurns++; // Modified the starter code
 
                 takeTurn(otherPlayer(player));
                 //skippedTurns++;
-            } else if (skippedTurns == 2 || og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() == 64){
+            } else if (skippedTurns == 2 || og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() +
+                    og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() == 64){
                 gameOver();
             }
 
@@ -214,30 +222,62 @@ public class GameController  {
     protected void computerDecision(ComputerPlayer player) {
         Map<BoardSpace, List<BoardSpace>> availableMoves = og.getAvailableMoves(player);
         if (availableMoves == null) {
-            turnLabel.setText("Null move found for \n" + player.getColor() + "! \n Please implement \ncomputerDecision()!");
+            turnLabel.setText("Null move found for \n" +
+                    player.getColor() + "! \n Please implement \ncomputerDecision()!");
+            return;
         } else if (availableMoves.size() == 0) {
-            if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() != 64 && skippedTurns != 2) {
-                skipTurnText(player);
-                takeTurn(otherPlayer(player));
-                skippedTurns++;
-            } else if (skippedTurns == 2 || og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() == 64){
+            int totalPositions = og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() +
+                    og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size();
+            if (totalPositions == 64) {
                 gameOver();
+                return;
             }
 
+            if (skippedTurns == 2) {
+                gameOver();
+                return;
+            } else {
+                skipTurnText(player);
+                skippedTurns++;
+                takeTurn(otherPlayer(player));
+            }
+            return;
         } else {
             skippedTurns = 0;
             BoardSpace selectedDestination = og.computerDecision(player);
-            // From all origins, path to the destination and take spaces
-            og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
-            updateGUIBoard(player, availableMoves, selectedDestination);
 
-            // Redisplay the new board
-            clearBoard();
-            displayBoard();
+            if (selectedDestination != null) {
+                // From all origins, path to the destination and take spaces
+                og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
+                updateGUIBoard(player, availableMoves, selectedDestination);
 
-            // Next opponent turn
-            turnText(otherPlayer(player));
-            takeTurn(otherPlayer(player));
+                int totalPositions = og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() +
+                        og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size();
+                if (totalPositions == 64) {
+                    gameOver();
+                    return;
+                }
+
+                // Redisplay the new board
+                clearBoard();
+                displayBoard();
+
+                // Next opponent turn
+                turnText(otherPlayer(player));
+                takeTurn(otherPlayer(player));
+            }
+
+//            // From all origins, path to the destination and take spaces
+//            og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
+//            updateGUIBoard(player, availableMoves, selectedDestination);
+
+//            // Redisplay the new board
+//            clearBoard();
+//            displayBoard();
+//
+//            // Next opponent turn
+//            turnText(otherPlayer(player));
+//            takeTurn(otherPlayer(player));
         }
 
     }
@@ -249,55 +289,56 @@ public class GameController  {
      * @param selectedDestination the selected destination space that was clicked on
      */
     @FXML
-    protected void selectSpace(Player player, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
-        // Remove other handlers by reinitializing empty spaces where they are
-        for (BoardSpace destination : availableMoves.keySet()) {
-            GUISpace guiSpace = guiBoard[destination.getX()][destination.getY()];
-            if (destination != selectedDestination) {
-                // Reinit unselected spaces, to remove event handlers
-                og.getBoard()[destination.getX()][destination.getY()] =
-                        new BoardSpace(destination.getX(), destination.getY(), BoardSpace.SpaceType.EMPTY);
-                gameBoard.getChildren().remove(guiSpace.getSquare());
-                GUISpace newGuiSpace = new GUISpace(destination.getX(), destination.getY(), BoardSpace.SpaceType.EMPTY);
-                Pane newSquare = newGuiSpace.getSquare();
-                gameBoard.getChildren().add(newSquare);
-                guiBoard[destination.getX()][destination.getY()] = guiSpace;
-            } else {
-                og.getBoard()[destination.getX()][destination.getY()] =
-                        new BoardSpace(destination.getX(), destination.getY(), player.getColor());
-                gameBoard.getChildren().remove(guiSpace.getSquare());
-                GUISpace newGuiSpace = new GUISpace(destination.getX(), destination.getY(), player.getColor());
-                Pane newSquare = newGuiSpace.getSquare();
-                gameBoard.getChildren().add(newSquare);
-                guiBoard[destination.getX()][destination.getY()] = guiSpace;
-            }
+    protected void selectSpace(Player player,
+                               Map<BoardSpace,List<BoardSpace>> availableMoves,
+                               BoardSpace selectedDestination) {
+        // wipe hover handlers / yellow tint on the other candidate squares
+        for (BoardSpace dst : availableMoves.keySet()) {
+            if (dst == selectedDestination) continue;           // leave target untouched
+
+            GUISpace gui = guiBoard[dst.getX()][dst.getY()];
+            og.getBoard()[dst.getX()][dst.getY()].setType(BoardSpace.SpaceType.EMPTY);
+            gameBoard.getChildren().remove(gui.getSquare());
+
+            GUISpace fresh = new GUISpace(dst.getX(), dst.getY(), BoardSpace.SpaceType.EMPTY);
+            gameBoard.getChildren().add(fresh.getSquare());
+            guiBoard[dst.getX()][dst.getY()] = fresh;
         }
 
-        // Recolor the bg of the destination
-        GUISpace guiSpace = guiBoard[selectedDestination.getX()][selectedDestination.getY()];
-        guiSpace.setBgColor(Color.LIMEGREEN);
+        // visual cue on the clicked square
+        guiBoard[selectedDestination.getX()][selectedDestination.getY()]
+                .setBgColor(Color.LIMEGREEN);
 
-        // From all origins, path to the destination and take spaces
+        // apply move + flips; this also updates playerOwnedSpaces
         og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
         updateGUIBoard(player, availableMoves, selectedDestination);
 
-        // Redisplay the new board
+        // board full -> end
+        if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() +
+                og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() == 64) {
+            gameOver();
+            return;
+        }
+
+        // redraw
         clearBoard();
         displayBoard();
 
-        // Next opponent turn
-        turnText(otherPlayer(player));
-        takeTurn(otherPlayer(player));
+        // next turn
+        Player opp = otherPlayer(player);
+        turnText(opp);
+        takeTurn(opp);
     }
 
     /**
      * Updates the GUI Board by adding or updating discs from all origins to a given destination
      * @param player player that is taking a turn
      * @param availableMoves the list of all available destinations and origins
-     * @param selectedDestination the selected destination from either user input or computer decision
+     * @param selectedDestination the selected dest from either user input or computer decision
      */
     @FXML
-    protected void updateGUIBoard(Player player, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
+    protected void updateGUIBoard(Player player, Map<BoardSpace,
+            List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
         List<BoardSpace> selectedOrigins = availableMoves.get(selectedDestination);
         for (BoardSpace selectedOrigin : selectedOrigins) {
             int offsetX = selectedDestination.getX() - selectedOrigin.getX();
@@ -341,23 +382,31 @@ public class GameController  {
     protected void gameOver() {
         boolean p1Victory = false;
         boolean tie = false;
-        if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() > og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size()) {
+        if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() > og.
+                getPlayerTwo().getPlayerOwnedSpacesSpaces().size()) {
             p1Victory = true;
-        } else if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() == og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size()) {
+        } else if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() == og.
+                getPlayerTwo().getPlayerOwnedSpacesSpaces().size()) {
             tie = true;
         }
         if (tie) {
             turnLabel.setText("GAME OVER! Game Tied with scores: \n " +
-                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().
+                    getPlayerOwnedSpacesSpaces().size() + " - " +
+                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().
+                    getPlayerOwnedSpacesSpaces().size());
         } else if (p1Victory) {
             turnLabel.setText("GAME OVER! BLACK wins with scores: \n " +
-                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().
+                    getPlayerOwnedSpacesSpaces().size() + " - " +
+                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().
+                    getPlayerOwnedSpacesSpaces().size());
         } else {
             turnLabel.setText("GAME OVER! WHITE wins with scores: \n " +
-                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() + " - " +
-                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size());
+                    og.getPlayerOne().getColor() + ": " + og.getPlayerOne().
+                    getPlayerOwnedSpacesSpaces().size() + " - " +
+                    og.getPlayerTwo().getColor() + ": " + og.getPlayerTwo().
+                    getPlayerOwnedSpacesSpaces().size());
         }
     }
 }
