@@ -46,9 +46,9 @@ public class OthelloGame {
      */
     public void initBoard() {
         board = new BoardSpace[GAME_BOARD_SIZE][GAME_BOARD_SIZE];
-        for (int i = 0; i < GAME_BOARD_SIZE; i++) {
-            for (int j = 0; j < GAME_BOARD_SIZE; j++) {
-                board[i][j] = new BoardSpace(i, j, BoardSpace.SpaceType.EMPTY);
+        for (int x = 0; x < GAME_BOARD_SIZE; x++) {
+            for (int y = 0; y < GAME_BOARD_SIZE; y++) {
+                board[x][y] = new BoardSpace(x, y, BoardSpace.SpaceType.EMPTY);
             }
         }
 
@@ -154,6 +154,71 @@ public class OthelloGame {
      * @return the BoardSpace that was decided upon
      */
     public BoardSpace computerDecision(ComputerPlayer computer) {
+        Player self = (computer == playerOne ? playerOne : playerTwo);
+        Player opponent = (computer == playerOne ? playerTwo : playerOne);
+
+        String theStrategy = computer.getStrategy();
+        Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
+
+        if (theStrategy.equals("minimax")) {
+            System.out.println((self == playerOne ? "Player one" : "Player Two")
+                    + " just took a turn, " + computer.getColor() + " minimax strategy");
+            BoardSpace next = computer.computerMove(board, self, opponent, 3);
+
+            if (next != null) {
+                System.out.println("The placed value is : " + next.getX() + " " + next.getY());
+                int x_axis = next.getX();
+                int y_axis = next.getY();
+                for (BoardSpace i : move.keySet()) {
+                    if (i.getX() == x_axis && i.getY() == y_axis) {
+                        return i;
+                    }
+                }
+            }
+        } else if (theStrategy.equals("custom")) {
+            System.out.println((self == playerOne ? "Player one" : "Player Two")
+                    + " just took a turn, " + computer.getColor() + " ML strategy");
+            BoardSpace next = computer.computerMove(board, self);
+
+            if (next != null) {
+                System.out.println("The placed value is : " + next.getX() + " " + next.getY());
+                int x_axis = next.getX();
+                int y_axis = next.getY();
+                for (BoardSpace i : move.keySet()) {
+                    if (i.getX() == x_axis && i.getY() == y_axis) {
+                        return i;
+                    }
+                }
+            }
+        }
+
+//        if (playerOne.getColor() == computer.getColor()) {
+//            Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
+//            System.out.println("Computer is Player one: " + computer.getColor());
+//            BoardSpace next = computer.computerMove(board, playerOne, playerTwo, 10);
+//            System.out.println("Next value is : " + next.getX() + " " + next.getY());
+//            int x_axis = next.getX();
+//            int y_axis = next.getY();
+//            for (BoardSpace i : move.keySet()) {
+//                if (i.getX() == x_axis && i.getY() == y_axis) {
+//                    return i;
+//                }
+//            }
+//        } else {
+//            Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
+//            System.out.println("Computer is Player Two: " + computer.getColor());
+//            BoardSpace next = computer.computerMove(board, playerTwo, playerOne, 10);
+//            System.out.println("Next value is : " + next.getX() + " " + next.getY());
+//            int x_axis = next.getX();
+//            int y_axis = next.getY();
+//            for (BoardSpace i : move.keySet()) {
+//                if (i.getX() == x_axis && i.getY() == y_axis) {
+//
+//                    return i;
+//                }
+//            }
+//        }
+        System.out.println("Null arrived!");
         return null;
     }
 
