@@ -13,8 +13,11 @@ public class ComputerPlayer extends Player{
         // PART 2
         // TODO: Use the strategyName input to create a specific strategy class for this computer
         // This input should match the ones specified in App.java!
+
+        // First convert the strategy name to lowercase
         this.strategy = strategyName.toLowerCase();
 
+        // For the custom ML strategy, specify the gamma and alpha parameter values
         if (this.strategy.equals("custom")) {
             theComputerStrategy = new TDLearningStrategy(0.90, 0.005);
         } else if (this.strategy.equals("minimax")) {
