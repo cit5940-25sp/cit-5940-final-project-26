@@ -297,7 +297,6 @@ public class GameController  {
     @FXML
     protected void updateGUIBoard(Player player, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
         List<BoardSpace> selectedOrigins = availableMoves.get(selectedDestination);
-        System.out.println(selectedDestination.getX() + " " + selectedDestination.getY());
         for (BoardSpace selectedOrigin : selectedOrigins) {
             int offsetX = selectedDestination.getX() - selectedOrigin.getX();
             int offsetY = selectedDestination.getY() - selectedOrigin.getY();

@@ -157,7 +157,8 @@ public class OthelloGame {
         if (playerOne.getColor() == computer.getColor()) {
             Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
             System.out.println("Computer is Player one: " + computer.getColor());
-            BoardSpace next = computer.selectedStrategy(board, playerOne, playerTwo, 2);
+            BoardSpace next = computer.selectedStrategy(board, playerOne, playerTwo, 2, 2000);
+            //System.out.println("The computer 1 score is: " + computer.score(board, playerOne));
             System.out.println("Next value is : " + next.getX() + " " + next.getY());
             int x_axis = next.getX();
             int y_axis = next.getY();
@@ -169,8 +170,9 @@ public class OthelloGame {
         } else {
             Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
             System.out.println("Computer is Player Two: " + computer.getColor());
-            BoardSpace next = computer.selectedStrategy(board, playerTwo, playerOne, 2);
-            System.out.println("Next value is : " + next.getX() + " " + next.getY());
+            BoardSpace next = computer.selectedStrategy(board, playerTwo, playerOne, 7, 0);
+            //System.out.println("The computer 2 score is: " + computer.score(board, playerTwo));
+            //System.out.println("Next value is : " + next.getX() + " " + next.getY());
             int x_axis = next.getX();
             int y_axis = next.getY();
             for (BoardSpace i : move.keySet()) {
