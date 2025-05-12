@@ -8,6 +8,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Unit tests for OthelloGame
+ * JUnit 4.13.2
+ */
 public class MinimaxTest {
 
     private BoardSpace[][] board;
