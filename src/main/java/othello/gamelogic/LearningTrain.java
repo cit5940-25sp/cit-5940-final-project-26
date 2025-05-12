@@ -246,7 +246,7 @@ public class LearningTrain {
 
         // First train the naive model by playing custom vs. custom games
         System.out.println("Training with custom vs custom");
-        training.repeatGame(1);
+        training.repeatGame(50);
 
         try {
             training.saveTrainedModel(
@@ -257,13 +257,13 @@ public class LearningTrain {
 
         try {
             training.loadTrainedModel(
-                    "src/main/java/othello/gamelogic/trainedModel.zip", 0.99, 0.01);
+                    "src/main/java/othello/gamelogic/trainedModel.zip", 0.90, 0.005);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
 
         // Then have the trained model play against minimax
         System.out.println("Training with minimax");
-        training.trainVsMinimax(100);
+        training.trainVsMinimax(10);
     }
 }
