@@ -48,6 +48,8 @@ public class Minimax {
         }
         return max_boardspace;
     }
+
+
     //This method is the next step after buildTree()
     //Return the next optimal BoardSpace to move based on minimax algo
     public BoardSpace minimaxStrategyWithMaxDepth(Node node) {
