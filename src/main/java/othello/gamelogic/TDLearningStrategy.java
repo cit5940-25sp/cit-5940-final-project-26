@@ -257,7 +257,7 @@ public class TDLearningStrategy implements AIStrategy {
      * @param reward the reward for the outcome -- 1 if wining, 0 if not winning
      * @param nextBoard the next board status
      */
-    protected double updateInternal(BoardSpace[][] thisBoard, Player actingPlayer,
+    public double updateInternal(BoardSpace[][] thisBoard, Player actingPlayer,
                                   double reward, BoardSpace[][] nextBoard) {
         double currentInternalValue = predictBoard(thisBoard, actingPlayer);
         double nextInternalValue = 0.0;
