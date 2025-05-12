@@ -190,34 +190,23 @@ public class OthelloGame {
                     }
                 }
             }
+        } else if (theStrategy.equals("mcts")) {
+            System.out.println((self == playerOne ? "Player one" : "Player Two")
+                    + " just took a turn, " + computer.getColor() + " MCTS strategy");
+            BoardSpace next = computer.computerMove(board, self, opponent, -1, 100);
+
+            if (next != null) {
+                System.out.println("The placed value is : " + next.getX() + " " + next.getY());
+                int x_axis = next.getX();
+                int y_axis = next.getY();
+                for (BoardSpace i : move.keySet()) {
+                    if (i.getX() == x_axis && i.getY() == y_axis) {
+                        return i;
+                    }
+                }
+            }
         }
 
-//        if (playerOne.getColor() == computer.getColor()) {
-//            Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
-//            System.out.println("Computer is Player one: " + computer.getColor());
-//            BoardSpace next = computer.computerMove(board, playerOne, playerTwo, 10);
-//            System.out.println("Next value is : " + next.getX() + " " + next.getY());
-//            int x_axis = next.getX();
-//            int y_axis = next.getY();
-//            for (BoardSpace i : move.keySet()) {
-//                if (i.getX() == x_axis && i.getY() == y_axis) {
-//                    return i;
-//                }
-//            }
-//        } else {
-//            Map<BoardSpace, List<BoardSpace>> move = computer.getAvailableMoves(board);
-//            System.out.println("Computer is Player Two: " + computer.getColor());
-//            BoardSpace next = computer.computerMove(board, playerTwo, playerOne, 10);
-//            System.out.println("Next value is : " + next.getX() + " " + next.getY());
-//            int x_axis = next.getX();
-//            int y_axis = next.getY();
-//            for (BoardSpace i : move.keySet()) {
-//                if (i.getX() == x_axis && i.getY() == y_axis) {
-//
-//                    return i;
-//                }
-//            }
-//        }
         System.out.println("Null arrived!");
         return null;
     }

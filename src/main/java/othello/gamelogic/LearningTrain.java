@@ -220,27 +220,6 @@ public class LearningTrain {
         System.out.println("The ML strategy win rate is: " + (customWinRate * 100.0));
     }
 
-    public void noTrainingCustomVsMinimax(int iterations) {
-        int customWins = 0;
-        for (int i = 1; i <= iterations; i++) {
-            ComputerPlayer blackDiscCustom = new ComputerPlayer("custom");
-            blackDiscCustom.setColor(BoardSpace.SpaceType.BLACK);
-
-            ComputerPlayer whiteDiscMinimax = new ComputerPlayer("minimax");
-            whiteDiscMinimax.setColor(BoardSpace.SpaceType.WHITE);
-
-            singleGame(blackDiscCustom, whiteDiscMinimax);
-            int customCounts = blackDiscCustom.getPlayerOwnedSpacesSpaces().size();
-            int minimaxCounts = whiteDiscMinimax.getPlayerOwnedSpacesSpaces().size();
-            if (customCounts > minimaxCounts) {
-                customWins++;
-            }
-        }
-
-        double customWinRate = (double) customWins / iterations * 100;
-        System.out.println("The untrained ML strategy win rate is: " + customWinRate);
-    }
-
     public static void main(String[] args) {
         LearningTrain training = new LearningTrain();
 
@@ -263,7 +242,7 @@ public class LearningTrain {
         }
 
         // Then have the trained model play against minimax
-        System.out.println("Training with minimax");
-        training.trainVsMinimax(10);
+        System.out.println("Playing with minimax");
+        training.trainVsMinimax(100);
     }
 }

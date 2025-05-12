@@ -279,47 +279,91 @@ public class GameController  {
      * @param availableMoves the available moves gotten from showMoves earlier
      * @param selectedDestination the selected destination space that was clicked on
      */
+//    @FXML
+//    protected void selectSpace(Player player, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
+//        // Remove other handlers by reinitializing empty spaces where they are
+//        for (BoardSpace destination : availableMoves.keySet()) {
+//            GUISpace guiSpace = guiBoard[destination.getX()][destination.getY()];
+//            if (destination != selectedDestination) {
+//                // Reinit unselected spaces, to remove event handlers
+//                og.getBoard()[destination.getX()][destination.getY()] =
+//                        new BoardSpace(destination.getX(), destination.getY(), BoardSpace.SpaceType.EMPTY);
+//                gameBoard.getChildren().remove(guiSpace.getSquare());
+//                GUISpace newGuiSpace = new GUISpace(destination.getX(), destination.getY(), BoardSpace.SpaceType.EMPTY);
+//                Pane newSquare = newGuiSpace.getSquare();
+//                gameBoard.getChildren().add(newSquare);
+//                guiBoard[destination.getX()][destination.getY()] = guiSpace;
+//            } else {
+//                og.getBoard()[destination.getX()][destination.getY()] =
+//                        new BoardSpace(destination.getX(), destination.getY(), player.getColor());
+//                gameBoard.getChildren().remove(guiSpace.getSquare());
+//                GUISpace newGuiSpace = new GUISpace(destination.getX(), destination.getY(), player.getColor());
+//                Pane newSquare = newGuiSpace.getSquare();
+//                gameBoard.getChildren().add(newSquare);
+//                guiBoard[destination.getX()][destination.getY()] = guiSpace;
+//            }
+//        }
+//
+//        // Recolor the bg of the destination
+//        GUISpace guiSpace = guiBoard[selectedDestination.getX()][selectedDestination.getY()];
+//        guiSpace.setBgColor(Color.LIMEGREEN);
+//
+//        // From all origins, path to the destination and take spaces
+//        og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
+//        updateGUIBoard(player, availableMoves, selectedDestination);
+//
+//        // Redisplay the new board
+//        clearBoard();
+//        displayBoard();
+//
+//        // Next opponent turn
+//        turnText(otherPlayer(player));
+//        takeTurn(otherPlayer(player));
+//    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @FXML
-    protected void selectSpace(Player player, Map<BoardSpace, List<BoardSpace>> availableMoves, BoardSpace selectedDestination) {
-        // Remove other handlers by reinitializing empty spaces where they are
-        for (BoardSpace destination : availableMoves.keySet()) {
-            GUISpace guiSpace = guiBoard[destination.getX()][destination.getY()];
-            if (destination != selectedDestination) {
-                // Reinit unselected spaces, to remove event handlers
-                og.getBoard()[destination.getX()][destination.getY()] =
-                        new BoardSpace(destination.getX(), destination.getY(), BoardSpace.SpaceType.EMPTY);
-                gameBoard.getChildren().remove(guiSpace.getSquare());
-                GUISpace newGuiSpace = new GUISpace(destination.getX(), destination.getY(), BoardSpace.SpaceType.EMPTY);
-                Pane newSquare = newGuiSpace.getSquare();
-                gameBoard.getChildren().add(newSquare);
-                guiBoard[destination.getX()][destination.getY()] = guiSpace;
-            } else {
-                og.getBoard()[destination.getX()][destination.getY()] =
-                        new BoardSpace(destination.getX(), destination.getY(), player.getColor());
-                gameBoard.getChildren().remove(guiSpace.getSquare());
-                GUISpace newGuiSpace = new GUISpace(destination.getX(), destination.getY(), player.getColor());
-                Pane newSquare = newGuiSpace.getSquare();
-                gameBoard.getChildren().add(newSquare);
-                guiBoard[destination.getX()][destination.getY()] = guiSpace;
-            }
+    protected void selectSpace(Player player,
+                               Map<BoardSpace,List<BoardSpace>> availableMoves,
+                               BoardSpace selectedDestination) {
+        // wipe hover handlers / yellow tint on the other candidate squares
+        for (BoardSpace dst : availableMoves.keySet()) {
+            if (dst == selectedDestination) continue;           // leave target untouched
+
+            GUISpace gui = guiBoard[dst.getX()][dst.getY()];
+            og.getBoard()[dst.getX()][dst.getY()].setType(BoardSpace.SpaceType.EMPTY);
+            gameBoard.getChildren().remove(gui.getSquare());
+
+            GUISpace fresh = new GUISpace(dst.getX(), dst.getY(), BoardSpace.SpaceType.EMPTY);
+            gameBoard.getChildren().add(fresh.getSquare());
+            guiBoard[dst.getX()][dst.getY()] = fresh;
         }
 
-        // Recolor the bg of the destination
-        GUISpace guiSpace = guiBoard[selectedDestination.getX()][selectedDestination.getY()];
-        guiSpace.setBgColor(Color.LIMEGREEN);
+        // visual cue on the clicked square
+        guiBoard[selectedDestination.getX()][selectedDestination.getY()]
+                .setBgColor(Color.LIMEGREEN);
 
-        // From all origins, path to the destination and take spaces
+        // apply move + flips; this also updates playerOwnedSpaces
         og.takeSpaces(player, otherPlayer(player), availableMoves, selectedDestination);
         updateGUIBoard(player, availableMoves, selectedDestination);
 
-        // Redisplay the new board
+        // board full -> end
+        if (og.getPlayerOne().getPlayerOwnedSpacesSpaces().size() +
+                og.getPlayerTwo().getPlayerOwnedSpacesSpaces().size() == 64) {
+            gameOver();
+            return;
+        }
+
+        // redraw
         clearBoard();
         displayBoard();
 
-        // Next opponent turn
-        turnText(otherPlayer(player));
-        takeTurn(otherPlayer(player));
+        // next turn
+        Player opp = otherPlayer(player);
+        turnText(opp);
+        takeTurn(opp);
     }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Updates the GUI Board by adding or updating discs from all origins to a given destination
