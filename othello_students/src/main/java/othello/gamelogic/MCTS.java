@@ -19,25 +19,25 @@ public class MCTS {
 
 
     public static void main(String[] args) {
-        int times = 1000;
-        Player self = new HumanPlayer();
-        Player op = new HumanPlayer();
-        BoardSpace[][] board;
-        self.setColor(BoardSpace.SpaceType.BLACK);
-        op.setColor(BoardSpace.SpaceType.WHITE);
-        board = new BoardSpace[8][8];
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                board[i][j] = new BoardSpace(i, j, BoardSpace.SpaceType.EMPTY);
-            }
-        }
-        board[3][3].setType(BoardSpace.SpaceType.WHITE);
-        board[4][4].setType(BoardSpace.SpaceType.WHITE);
-        board[3][4].setType(BoardSpace.SpaceType.BLACK);
-        board[4][3].setType(BoardSpace.SpaceType.BLACK);
-        MCTS mcts = new MCTS(times, self, op, board);
-        BoardSpace next_best = mcts.MCTS_Strategy();
-        System.out.println(next_best.getX() + " " + next_best.getY());
+//        int times = 1000;
+//        Player self = new HumanPlayer();
+//        Player op = new HumanPlayer();
+//        BoardSpace[][] board;
+//        self.setColor(BoardSpace.SpaceType.BLACK);
+//        op.setColor(BoardSpace.SpaceType.WHITE);
+//        board = new BoardSpace[8][8];
+//        for (int i = 0; i < 8; i++) {
+//            for (int j = 0; j < 8; j++) {
+//                board[i][j] = new BoardSpace(i, j, BoardSpace.SpaceType.EMPTY);
+//            }
+//        }
+//        board[3][3].setType(BoardSpace.SpaceType.WHITE);
+//        board[4][4].setType(BoardSpace.SpaceType.WHITE);
+//        board[3][4].setType(BoardSpace.SpaceType.BLACK);
+//        board[4][3].setType(BoardSpace.SpaceType.BLACK);
+//        MCTS mcts = new MCTS(times, self, op, board);
+//        BoardSpace next_best = mcts.MCTS_Strategy();
+//        System.out.println(next_best.getX() + " " + next_best.getY());
     }
 
     public MCTS() {}
