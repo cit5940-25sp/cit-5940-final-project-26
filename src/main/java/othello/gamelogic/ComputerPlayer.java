@@ -112,4 +112,8 @@ public class ComputerPlayer extends Player{
     public void setCustomStrategy(TDLearningStrategy customStrategy) {
         this.theComputerStrategy = customStrategy;
     }
+
+    public String getStrategy() {
+        return this.strategy;
+    }
 }
