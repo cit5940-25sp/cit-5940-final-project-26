@@ -168,6 +168,27 @@ public class TestMinimax {
         assertNull(mm.futureBoard(board, fake, moves, black));
     }
 
+    // ensure pruning works on min branch when alpha > current min
+    @Test
+    public void BetaPruneTest() {
+        Node root = new Node();
+        root.setMin(true);
+        Node child1 = new Node(); child1.setWeight(-50);
+        Node child2 = new Node(); child2.setWeight( 99);  // << should be cut
+        root.getChildren().add(child1);
+        root.getChildren().add(child2);
+        int alpha = -10;
+        Node picked = mm.min_node(root, alpha, Integer.MAX_VALUE);
+        assertSame(child1, picked);
+    }
+
+    // passing maxDepth < 2 should throw IllegalArgumentException
+    @Test(expected = IllegalArgumentException.class)
+    public void BuildDepthErrorTest() {
+        Node root = new Node();
+        mm.buildTree(board, black, white, 0, root, 1);
+    }
+
     // main(): ensure demo main runs without error
     @Test
     public void mainCoverageTest() {
