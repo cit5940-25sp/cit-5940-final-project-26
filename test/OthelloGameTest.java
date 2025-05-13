@@ -18,6 +18,7 @@ public class OthelloGameTest {
     private OthelloGame game;
     private BoardSpace[][] board;
 
+
     /**
      * identical test fixture for each test – reproducible and small
      */
@@ -296,5 +297,127 @@ public class OthelloGameTest {
         int blackCount = black.getPlayerOwnedSpacesSpaces().size();
         int whiteCount = white.getPlayerOwnedSpacesSpaces().size();
         assertTrue(blackCount > whiteCount);
+    }
+
+    @Test
+    // invalid destination shouldn’t change the board
+    public void takeSpacesWithInvalidDestinationTest() {
+        BoardSpace dest = board[0][0];
+        Map<BoardSpace, List<BoardSpace>> moves = Collections.emptyMap();
+        game.takeSpaces(black, white, moves, dest);
+        assertSame(BoardSpace.SpaceType.EMPTY, dest.getType());
+    }
+
+    @Test
+    // full board leaves no legal moves for either player
+    public void fullBoardNoMovesTest() {
+        for (BoardSpace[] row : board) {
+            for (BoardSpace c : row) {
+                c.setType(BoardSpace.SpaceType.BLACK);
+                black.getPlayerOwnedSpacesSpaces().add(c);
+            }
+        }
+        assertTrue(game.getAvailableMoves(black).isEmpty());
+        assertTrue(game.getAvailableMoves(white).isEmpty());
+    }
+
+    @Test
+    // claim an empty cell and add to player’s stones
+    public void takeSpaceEmptyClaimTest() {
+        BoardSpace empty = board[0][0];
+        assertSame(BoardSpace.SpaceType.EMPTY, empty.getType());
+        game.takeSpace(black, white, 0, 0);
+        assertSame(BoardSpace.SpaceType.BLACK, empty.getType());
+        assertTrue(black.getPlayerOwnedSpacesSpaces().contains(empty));
+    }
+
+    @Test
+    // capture opponent’s white stone and transfer ownership
+    public void takeSpaceCaptureOpponentTest() {
+        BoardSpace target = board[3][3];               // starts WHITE
+        assertSame(BoardSpace.SpaceType.WHITE, target.getType());
+        game.takeSpace(black, white, 3, 3);
+        assertSame(BoardSpace.SpaceType.BLACK, target.getType());
+        assertFalse(white.getPlayerOwnedSpacesSpaces().contains(target));
+        assertTrue(black.getPlayerOwnedSpacesSpaces().contains(target));
+    }
+
+    @Test
+    // minimax branch should return the planned move
+    public void computerDecisionMinimaxTest() {
+        BoardSpace move = board[2][3];                 // any legal square
+        ComputerPlayer cpu = new DummyComputerPlayer("minimax", move);
+        assertSame("minimax branch failed", move, game.computerDecision(cpu));
+    }
+
+    @Test
+    // custom strategy branch should return the planned move
+    public void computerDecisionCustomTest() {
+        BoardSpace move = board[3][2];
+        ComputerPlayer cpu = new DummyComputerPlayer("custom", move);
+        assertSame("custom branch failed", move, game.computerDecision(cpu));
+    }
+
+    @Test
+    // mcts branch should return the planned move
+    public void computerDecisionMCTSTest() {
+        BoardSpace move = board[4][5];
+        ComputerPlayer cpu = new DummyComputerPlayer("mcts", move);
+        assertSame("mcts branch failed", move, game.computerDecision(cpu));
+    }
+
+    @Test
+    // unknown strategy returns null
+    public void computerDecisionUnknownStrategyTest() {
+        BoardSpace move = board[5][4];
+        ComputerPlayer cpu = new DummyComputerPlayer("random", move);
+        assertNull("unexpected move for unknown strategy", game.computerDecision(cpu));
+    }
+
+    /**
+     * Minimal stub – just enough behaviour for computerDecision().
+     */
+    // DummyComputerPlayer is a bare‐bones ComputerPlayer for tests.
+    // It takes a strategy name and a fixed move in its constructor,
+    // then overrides getStrategy(), getAvailableMoves() and all computerMove()
+    // methods to always return that move, so we can force each branch
+    // in computerDecision() without running the real AI logic.
+    private static class DummyComputerPlayer extends ComputerPlayer {
+        private final String strategy;                 // "minimax", "custom", or "mcts"
+        private final BoardSpace plannedMove;          // the square we pretend to choose
+        private final Map<BoardSpace,List<BoardSpace>> legalMoves;
+
+        DummyComputerPlayer(String strategy, BoardSpace plannedMove) {
+            super("dummy");                            // supply required name arg
+            this.strategy = strategy;
+            this.plannedMove = plannedMove;
+            this.legalMoves = new HashMap<>();
+            this.legalMoves.put(plannedMove, Collections.emptyList());
+            setColor(BoardSpace.SpaceType.BLACK);      // any colour is fine for tests
+        }
+
+        // strategy getter used by computerDecision()
+        @Override public String getStrategy() { return strategy; }
+
+        // used by computerDecision() to retrieve moves
+        @Override
+        public Map<BoardSpace, List<BoardSpace>> getAvailableMoves(BoardSpace[][] ignored) {
+            return legalMoves;
+        }
+
+        // ↓ All three overloads just hand back the pre-chosen square
+        @Override
+        public BoardSpace computerMove(BoardSpace[][] b, Player s, Player o, int depth) {
+            return plannedMove;
+        }
+        @Override
+        public BoardSpace computerMove(BoardSpace[][] b, Player s) {
+            return plannedMove;
+        }
+        @Override
+        public BoardSpace computerMove(BoardSpace[][] b, Player s, Player o,
+                                       int dummy1, int dummy2) {
+            return plannedMove;
+        }
     }
 }
