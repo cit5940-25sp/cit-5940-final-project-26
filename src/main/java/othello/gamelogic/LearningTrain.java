@@ -149,7 +149,7 @@ public class LearningTrain {
         for (int i = 1; i <= iterations; i++) {
             ComputerPlayer playerBlackDisc = new ComputerPlayer("custom");
             playerBlackDisc.setColor(BoardSpace.SpaceType.BLACK);
-            ComputerPlayer playerWhiteDisc = new ComputerPlayer("custom");
+            ComputerPlayer playerWhiteDisc = new ComputerPlayer("minimax");
             playerWhiteDisc.setColor(BoardSpace.SpaceType.WHITE);
 
             // Call singleGame to play one game and get error
@@ -275,7 +275,7 @@ public class LearningTrain {
 
         // First train the naive model by playing custom vs. custom games
         System.out.println("Training with custom vs custom");
-        training.repeatGame(50);
+        training.repeatGame(20);
 
         try {
             training.saveTrainedModel(
