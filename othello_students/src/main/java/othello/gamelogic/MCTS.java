@@ -40,8 +40,12 @@ public class MCTS {
 //        System.out.println(next_best.getX() + " " + next_best.getY());
     }
 
+
+    //Default constructor
     public MCTS() {}
 
+    //Constructor for MCTS with four arguments
+    //Para: Epoch times, self player, opponent player, current board state
     public MCTS(int runTimes, Player self, Player op, BoardSpace[][] board) {
         this.times = runTimes;
         this.self = self;
@@ -49,9 +53,12 @@ public class MCTS {
         this.board = board;
     }
 
+    //Implement the MCTS with four steps during the given iterations
     public BoardSpace MCTS_Strategy() {
+        //Everytime, we need a default root
         MCTSNode root = new MCTSNode();
         root.setBoard(this.board);
+        //Based on the iterations, repeat four steps
         while (times >= 0) {
             MCTSNode next_node = select(root);
             MCTSNode simulate_node = expansion(next_node, next_node.getBoard());
@@ -65,6 +72,7 @@ public class MCTS {
         }
         int max_N = Integer.MIN_VALUE;
         MCTSNode max_node = null;
+        //Choose the node with max N, which is the optimal next step
         for (int i = 0; i < root.getMctsChildren().size(); i++) {
             if (root.getMctsChildren().get(i).getTotalSimulations() >= max_N) {
                 max_N = root.getMctsChildren().get(i).getTotalSimulations();
@@ -72,16 +80,20 @@ public class MCTS {
             }
         }
         BoardSpace next_step = max_node.getSpace();
+        //Prints the number of wins versus number of total simulations for testing
         for (MCTSNode i : root.getMctsChildren()) {
             System.out.println("Number of wins: " + i.getNumberOfWin() + " " + "Number of total simulation: " + i.getTotalSimulations());
         }
         return next_step;
     }
 
+    //UCT Formula and return the result of every node based on formula
     public double UCT(MCTSNode node) {
+        //If node is not visited, return infinity
         if (node.getTotalSimulations() == 0) {
             return Double.POSITIVE_INFINITY;
         }
+        //If node is visited, return the relative result
         double result = ((double) node.getNumberOfWin() / node.getTotalSimulations()) +
                 (Constants.EXPLORATION_PARAM) * (Math.sqrt(Math.log(node.getParentTotalSimulation()) / node.getTotalSimulations()));
         return result;
@@ -109,13 +121,17 @@ public class MCTS {
         }
     }
 
+
+    //2. This is the second step to expand a leaf node that been selected
     public MCTSNode expansion(MCTSNode node, BoardSpace[][] board) {
         if (!node.getMctsChildren().isEmpty()) {
             Random random = new Random();
             MCTSNode random_node = node.getMctsChildren().get(random.nextInt(0, node.getMctsChildren().size()));
             return random_node;
         }
+        //This is to distinguish the self node vs opponent node
         if (node.getDepth() % 2 == 0) {
+            //This is the self node
             Map<BoardSpace, List<BoardSpace>> move = self.getAvailableMoves(board);
             if (move.isEmpty()) {
                 return node;
@@ -129,6 +145,7 @@ public class MCTS {
                 node.getMctsChildren().add(temp);
             }
         } else {
+            //This is the opponent node
             Map<BoardSpace, List<BoardSpace>> move = op.getAvailableMoves(board);
             for (BoardSpace i : move.keySet()) {
                 if (move.isEmpty()) {
@@ -145,17 +162,20 @@ public class MCTS {
         if (node.getMctsChildren().isEmpty()) {
             return node;
         }
+        //After expanded all the possible moves, we randomly choose the next step
         Random random = new Random();
         MCTSNode random_node = node.getMctsChildren().get(random.nextInt(0, node.getMctsChildren().size()));
         return random_node;
     }
 
+    //3. This is the third step to simulate the win/loss situation until the end of games by two random players
     public boolean simulation(MCTSNode node) {
         BoardSpace[][] cur_board = node.getBoard();
         boolean self_turn = false;
         if (node.getDepth() % 2 == 0) {
             self_turn = true;
         }
+        //Loop until the game ends
         while (!self.getAvailableMoves(cur_board).isEmpty() && !op.getAvailableMoves(cur_board).isEmpty()) {
             if (self_turn) {
                 Map<BoardSpace, List<BoardSpace>> move = self.getAvailableMoves(cur_board);
@@ -192,6 +212,8 @@ public class MCTS {
         }
         int self_spaces = countSpaces(cur_board, self.getColor());
         int op_spaces = countSpaces(cur_board, op.getColor());
+        //Use more advanced strategy to consider tie to be loss
+        //This will avoid some defensive operations to be not strong
         if (self_spaces > op_spaces) {
             //System.out.println(self_spaces + " " + op_spaces + " " + cur_board);
             return true;
@@ -199,6 +221,7 @@ public class MCTS {
         return false;
     }
 
+    //This method is for counting the number of spaces for each player(color)
     public int countSpaces(BoardSpace[][] board, BoardSpace.SpaceType type) {
         int count = 0;
         if (board == null) {
@@ -214,6 +237,7 @@ public class MCTS {
         return count;
     }
 
+    //4. This is the fourth step which send back the win/loss condition to all the parents in the path
     public void backpropagation(MCTSNode node, boolean win) {
         if (node == null) {
             return;
@@ -229,15 +253,17 @@ public class MCTS {
     }
 
 
-
+    //This method is for predicting and mimic the next state of board after the destination boardSpace is selected
     public BoardSpace[][] futureBoard(BoardSpace[][] board, BoardSpace destination, Map<BoardSpace,
             List<BoardSpace>> availableMoves, Player pc) {
         BoardSpace[][] copyBoard = getCopyBoard(board);
         List<BoardSpace> theOrigins = availableMoves.get(destination);
+        //If the availableMove is empty, then just return null
         if (theOrigins == null || theOrigins.isEmpty()) {
             System.out.println("Error: Null");
             return null;
         }
+        //This method is based on Owen's takeSpaces() method by adding some modification
         for (BoardSpace eachOrigin : theOrigins) {
             // First find the direction to the destination
             int rowChange = Integer.compare(destination.getX(), eachOrigin.getX());
@@ -264,6 +290,7 @@ public class MCTS {
         return copyBoard;
     }
 
+    //This method is for protecting the original board so we get copy of it
     public BoardSpace[][] getCopyBoard(BoardSpace[][] original) {
         BoardSpace[][] copyBoard = new BoardSpace[original.length][original[0].length];
         for (int i = 0; i < copyBoard.length; i++) {
@@ -274,6 +301,7 @@ public class MCTS {
         return copyBoard;
     }
 
+    //This method is for testing and printing out the board in order to visualize it
     public String toString(BoardSpace[][] board) {
         String board_str = "";
         for (int i = 0; i < board.length; i++) {
