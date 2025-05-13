@@ -11,7 +11,7 @@ import othello.gamelogic.ComputerPlayer;
 import othello.gamelogic.TDLearningStrategy;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 public class TestTDLearningStrategy {
     @Test
