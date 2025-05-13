@@ -7,34 +7,37 @@ import othello.Constants;
 public class Minimax {
 
     public static void main(String[] args) {
-        Minimax test = new Minimax();
-        BoardSpace[][] board;
-        Player pc = new HumanPlayer();
-        pc.setColor(BoardSpace.SpaceType.BLACK);
-        board = new BoardSpace[8][8];
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                board[i][j] = new BoardSpace(i, j, BoardSpace.SpaceType.EMPTY);
-            }
-        }
-        board[3][3].setType(BoardSpace.SpaceType.WHITE);
-        board[4][4].setType(BoardSpace.SpaceType.WHITE);
-        board[3][4].setType(BoardSpace.SpaceType.BLACK);
-        board[4][3].setType(BoardSpace.SpaceType.BLACK);
-        //System.out.println(test.toString(board));
-        Node root = new Node();
-        Player one = new HumanPlayer();
-        Player two = new HumanPlayer();
-        one.setColor(BoardSpace.SpaceType.BLACK);
-        two.setColor(BoardSpace.SpaceType.WHITE);
-        test.buildTree(board, one, two, 0, root, 2);
-        System.out.println(test.toString(board));
-        BoardSpace best  = test.minimaxStrategyWithMaxDepth(root);
-        System.out.println(best.getX() + " " + best.getY());
+//        Minimax test = new Minimax();
+//        BoardSpace[][] board;
+//        Player pc = new HumanPlayer();
+//        pc.setColor(BoardSpace.SpaceType.BLACK);
+//        board = new BoardSpace[8][8];
+//        for (int i = 0; i < 8; i++) {
+//            for (int j = 0; j < 8; j++) {
+//                board[i][j] = new BoardSpace(i, j, BoardSpace.SpaceType.EMPTY);
+//            }
+//        }
+//        board[3][3].setType(BoardSpace.SpaceType.WHITE);
+//        board[4][4].setType(BoardSpace.SpaceType.WHITE);
+//        board[3][4].setType(BoardSpace.SpaceType.BLACK);
+//        board[4][3].setType(BoardSpace.SpaceType.BLACK);
+//        //System.out.println(test.toString(board));
+//        Node root = new Node();
+//        Player one = new HumanPlayer();
+//        Player two = new HumanPlayer();
+//        one.setColor(BoardSpace.SpaceType.BLACK);
+//        two.setColor(BoardSpace.SpaceType.WHITE);
+//        test.buildTree(board, one, two, 0, root, 2);
+//        System.out.println(test.toString(board));
+//        BoardSpace best  = test.minimaxStrategyWithMaxDepth(root);
+//        System.out.println(best.getX() + " " + best.getY());
     }
 
+    //Default constructor
     public Minimax() {}
 
+    //This method is for testing the minimax with only one-step depth
+    //It is for comparing with other AI strategy and itself with other number of depth
     public BoardSpace minimaxOneStep(BoardSpace[][] board, Player pc) {
         Map<BoardSpace, List<BoardSpace>> move = pc.getAvailableMoves(board);
         BoardSpace max_boardspace = null;
@@ -52,6 +55,7 @@ public class Minimax {
 
     //This method is the next step after buildTree()
     //Return the next optimal BoardSpace to move based on minimax algo
+    //This will return the next best move with alpha-beta pruning to enhance the efficiency
     public BoardSpace minimaxStrategyWithMaxDepth(Node node) {
         int alpha = Integer.MIN_VALUE;
         int beta = Integer.MAX_VALUE;
@@ -88,9 +92,11 @@ public class Minimax {
                 max_node = successor;
                 max_node.setWeight(max);
             }
+            //Alpha-beta pruning to cut the unnecessary nodes
             if (max > beta) {
                 return max_node;
             }
+            //Update the new alpha if possible
             alpha = Math.max(alpha, max);
         }
         return max_node;
@@ -109,9 +115,11 @@ public class Minimax {
                 min_node = successor;
                 min_node.setWeight(min);
             }
+            //Alpha-beta pruning to cut the unnecessary nodes
             if (min < alpha) {
                 return min_node;
             }
+            //Update the new beta if possible
             beta = Math.min(beta, min);
         }
         return min_node;
@@ -119,8 +127,8 @@ public class Minimax {
 
 
     //Depth start from 0
-    //MaxDepth starts from 2 to satisfy the minimax
-    //This method is to build the future state tree from current board state
+    //MaxDepth starts from 2 to satisfy the minimax, at least two
+    //This method is to build all the future state tree from current board state
     public void buildTree(BoardSpace[][] board, Player pc, Player op, int depth, Node root, int maxDepth) {
         if (maxDepth < 2) {
             throw new IllegalArgumentException("Error: Max Depth should be at least 2");
@@ -129,6 +137,7 @@ public class Minimax {
             return;
         }
         BoardSpace[][] copyBoard = this.getCopyBoard(board);
+        //If current node is root, set it to be root and depth 0, and go to next node
         if (depth == 0) {
             root.setRoot(true);
             root.setDepth(depth);
@@ -143,6 +152,7 @@ public class Minimax {
                 root.setWeight(computeWeight(copyBoard,pc));
                 return;
             }
+            //Add all the future moves of self player to the current node as children
             for (BoardSpace i : availableMoves.keySet()) {
                 Node temp = new Node();
                 temp.setBoardSpace(i);
@@ -159,6 +169,7 @@ public class Minimax {
                 root.setWeight(computeWeight(copyBoard,pc));
                 return;
             }
+            //Add all the future moves of opponent player to the current node as children
             for (BoardSpace i : availableMoves.keySet()) {
                 Node temp = new Node();
                 temp.setBoardSpace(i);
