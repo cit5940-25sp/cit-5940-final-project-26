@@ -1,5 +1,4 @@
 import org.junit.Test;
-import org.junit.jupiter.api.function.Executable;
 import othello.gamelogic.*;
 
 import java.util.List;
